@@ -1,0 +1,1305 @@
+diff --git a/LICENSE b/LICENSE
+deleted file mode 100644
+index b10f1b0..0000000
+--- a/LICENSE
++++ /dev/null
+@@ -1,7 +0,0 @@
+-Copyright (c) 2020 0xxd0
+-
+-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+-
+-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-
+-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\ No newline at end of file
+diff --git a/README.md b/README.md
+deleted file mode 100644
+index 06ca507..0000000
+--- a/README.md
++++ /dev/null
+@@ -1,31 +0,0 @@
+-# 可调试的、基于M1芯片、macOS 12系统的objc4.
+-
+-<!-- # **objc runtime**  -->
+-![build_status](https://github.com/0xxd0/objc4/workflows/build/badge.svg) 
+-[![Join the chat at https://gitter.im/0xxd0/objc4](https://badges.gitter.im/0xxd0/objc4.svg)](https://gitter.im/0xxd0/objc4?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
+-![support](https://img.shields.io/badge/support-macOS%20%7C%20iOS-orange.svg)
+-
+-- [Version](#Version)
+-- [Installation](#Installation)
+-- [Usage](#Usage)
+-- [License](#license)
+-
+-
+-## **Version**
+-
+-| macOS | macOS Version | Xcode Version | objc4 tarball version |
+-| - | - | - | - |
+-| [macOS Monterey] | [12.0.1] | [13.2 (13C90)] | [objc4-838] |
+-
+-## **Installation**
+-
+-Download zip or clone this repo, select **objc_debug** 、 **My Mac** and build.
+-
+-
+-## **Usage**
+-
+-手动把编译产物`libobjc.A.dylib`加入到你的工程，或者直接在`objc_debug`的main文件打断点调试。
+-
+-
+-## License
+-This project is released under the **MIT License**. The objc4 project is released under the **APPLE PUBLIC SOURCE LICENSE Version 2.0**.
+diff --git a/include/Block_private.h b/include/Block_private.h
+index 0ee878b..3f802dd 100644
+--- a/include/Block_private.h
++++ b/include/Block_private.h
+@@ -8,7 +8,7 @@
+  * @APPLE_LLVM_LICENSE_HEADER@
+  *
+  */
+-
++///11.5-xnu-xnu-7195.141.2/libkern/os/Block_private.h
+ #ifndef _BLOCK_PRIVATE_H_
+ #define _BLOCK_PRIVATE_H_
+ 
+diff --git a/include/CrashReporterClient.h b/include/CrashReporterClient.h
+index 68593ae..c3cb3df 100644
+--- a/include/CrashReporterClient.h
++++ b/include/CrashReporterClient.h
+@@ -24,7 +24,7 @@
+ /***********************************************************************
+  * Not to be installed in /usr/local/include
+  ***********************************************************************/
+-
++//Libc-825.40.1/include/CrashReporterClient.h
+ #ifndef _LIBC_CRASHREPORTERCLIENT_H
+ #define _LIBC_CRASHREPORTERCLIENT_H
+ 
+diff --git a/include/System/machine/cpu_capabilities.h b/include/System/machine/cpu_capabilities.h
+index 1fca46d..de7cf37 100644
+--- a/include/System/machine/cpu_capabilities.h
++++ b/include/System/machine/cpu_capabilities.h
+@@ -25,6 +25,7 @@
+  *
+  * @APPLE_OSREFERENCE_LICENSE_HEADER_END@
+  */
++///11.5-xnu-xnu-7195.141.2/osfmk/machine/cpu_capabilities.h
+ #ifdef  PRIVATE
+ 
+ #ifndef _MACHINE_CPU_CAPABILITIES_H
+diff --git a/include/System/pthread_machdep.h b/include/System/pthread_machdep.h
+index 001a8ae..c89e6d8 100644
+--- a/include/System/pthread_machdep.h
++++ b/include/System/pthread_machdep.h
+@@ -45,7 +45,7 @@
+  */
+ 
+ /* Machine-dependent definitions for pthread internals. */
+-
++//Libc-825.40.1/pthreads/pthread_machdep.h
+ #ifndef _POSIX_PTHREAD_MACHDEP_H
+ #define _POSIX_PTHREAD_MACHDEP_H
+ 
+@@ -211,25 +211,25 @@ int       pthread_key_init_np(int, void (*)(void *));
+ }
+ #endif
+ 
+-typedef int pthread_lock_t;
+-
+-__inline__ static int
+-_pthread_has_direct_tsd(void)
+-{
+-#if TARGET_IPHONE_SIMULATOR
+-	/* Simulator will use the host implementation, so bypass the macro that is in the target code */
+-	return 0;
+-#elif defined(__ppc__)
+-	int *caps = (int *)_COMM_PAGE_CPU_CAPABILITIES;
+-	if (*caps & kFastThreadLocalStorage) {
+-		return 1;
+-	} else {
+-		return 0;
+-	}
+-#else
+-	return 1;
+-#endif
+-}
++//typedef int pthread_lock_t;
++
++//__inline__ static int
++//_pthread_has_direct_tsd(void)
++//{
++//#if TARGET_IPHONE_SIMULATOR
++//	/* Simulator will use the host implementation, so bypass the macro that is in the target code */
++//	return 0;
++//#elif defined(__ppc__)
++//	int *caps = (int *)_COMM_PAGE_CPU_CAPABILITIES;
++//	if (*caps & kFastThreadLocalStorage) {
++//		return 1;
++//	} else {
++//		return 0;
++//	}
++//#else
++//	return 1;
++//#endif
++//}
+ 
+ #if TARGET_IPHONE_SIMULATOR || defined(__ppc__) || defined(__ppc64__) || \
+ 	(defined(__arm__) && !defined(_ARM_ARCH_7) && defined(_ARM_ARCH_6) && defined(__thumb__))
+@@ -239,59 +239,59 @@ _pthread_has_direct_tsd(void)
+ 
+ #else
+ 
+-/* To be used with static constant keys only */
+-__inline__ static void *
+-_pthread_getspecific_direct(unsigned long slot)
+-{
+-	void *ret;
+-#if defined(__i386__) || defined(__x86_64__)
+-	__asm__("mov %%gs:%1, %0" : "=r" (ret) : "m" (*(void **)(slot * sizeof(void *))));
+-#elif (defined(__arm__) && (defined(_ARM_ARCH_6) || defined(_ARM_ARCH_5))) 
+-	void **__pthread_tsd;
+-#if defined(__arm__) && defined(_ARM_ARCH_6)
+-	uintptr_t __pthread_tpid;
+-	__asm__("mrc p15, 0, %0, c13, c0, 3" : "=r" (__pthread_tpid));
+-	__pthread_tsd = (void**)(__pthread_tpid & ~0x3ul);
+-#elif defined(__arm__) && defined(_ARM_ARCH_5)
+-	register uintptr_t __pthread_tpid asm ("r9");
+-	__pthread_tsd = (void**)__pthread_tpid;
+-#endif
+-	ret = __pthread_tsd[slot];
+-#else
+-#error no _pthread_getspecific_direct implementation for this arch
+-#endif
+-	return ret;
+-}
+-
+-/* To be used with static constant keys only */
+-__inline__ static int
+-_pthread_setspecific_direct(unsigned long slot, void * val)
+-{
+-#if defined(__i386__)
+-#if defined(__PIC__)
+-	__asm__("movl %1,%%gs:%0" : "=m" (*(void **)(slot * sizeof(void *))) : "rn" (val));
+-#else
+-	__asm__("movl %1,%%gs:%0" : "=m" (*(void **)(slot * sizeof(void *))) : "ri" (val));
+-#endif
+-#elif defined(__x86_64__)
+-	/* PIC is free and cannot be disabled, even with: gcc -mdynamic-no-pic ... */
+-	__asm__("movq %1,%%gs:%0" : "=m" (*(void **)(slot * sizeof(void *))) : "rn" (val));
+-#elif (defined(__arm__) && (defined(_ARM_ARCH_6) || defined(_ARM_ARCH_5))) 
+-	void **__pthread_tsd;
+-#if defined(__arm__) && defined(_ARM_ARCH_6)
+-	uintptr_t __pthread_tpid;
+-	__asm__("mrc p15, 0, %0, c13, c0, 3" : "=r" (__pthread_tpid));
+-	__pthread_tsd = (void**)(__pthread_tpid & ~0x3ul);
+-#elif defined(__arm__) && defined(_ARM_ARCH_5)
+-	register uintptr_t __pthread_tpid asm ("r9");
+-	__pthread_tsd = (void**)__pthread_tpid;
+-#endif
+-	__pthread_tsd[slot] = val;
+-#else
+-#error no _pthread_setspecific_direct implementation for this arch
+-#endif
+-	return 0;
+-}
++///* To be used with static constant keys only */
++//__inline__ static void *
++//_pthread_getspecific_direct(unsigned long slot)
++//{
++//	void *ret;
++//#if defined(__i386__) || defined(__x86_64__)
++//	__asm__("mov %%gs:%1, %0" : "=r" (ret) : "m" (*(void **)(slot * sizeof(void *))));
++//#elif (defined(__arm__) && (defined(_ARM_ARCH_6) || defined(_ARM_ARCH_5)))
++//	void **__pthread_tsd;
++//#if defined(__arm__) && defined(_ARM_ARCH_6)
++//	uintptr_t __pthread_tpid;
++//	__asm__("mrc p15, 0, %0, c13, c0, 3" : "=r" (__pthread_tpid));
++//	__pthread_tsd = (void**)(__pthread_tpid & ~0x3ul);
++//#elif defined(__arm__) && defined(_ARM_ARCH_5)
++//	register uintptr_t __pthread_tpid asm ("r9");
++//	__pthread_tsd = (void**)__pthread_tpid;
++//#endif
++//	ret = __pthread_tsd[slot];
++//#else
++//#error no _pthread_getspecific_direct implementation for this arch
++//#endif
++//	return ret;
++//}
++
++///* To be used with static constant keys only */
++//__inline__ static int
++//_pthread_setspecific_direct(unsigned long slot, void * val)
++//{
++//#if defined(__i386__)
++//#if defined(__PIC__)
++//	__asm__("movl %1,%%gs:%0" : "=m" (*(void **)(slot * sizeof(void *))) : "rn" (val));
++//#else
++//	__asm__("movl %1,%%gs:%0" : "=m" (*(void **)(slot * sizeof(void *))) : "ri" (val));
++//#endif
++//#elif defined(__x86_64__)
++//	/* PIC is free and cannot be disabled, even with: gcc -mdynamic-no-pic ... */
++//	__asm__("movq %1,%%gs:%0" : "=m" (*(void **)(slot * sizeof(void *))) : "rn" (val));
++//#elif (defined(__arm__) && (defined(_ARM_ARCH_6) || defined(_ARM_ARCH_5)))
++//	void **__pthread_tsd;
++//#if defined(__arm__) && defined(_ARM_ARCH_6)
++//	uintptr_t __pthread_tpid;
++//	__asm__("mrc p15, 0, %0, c13, c0, 3" : "=r" (__pthread_tpid));
++//	__pthread_tsd = (void**)(__pthread_tpid & ~0x3ul);
++//#elif defined(__arm__) && defined(_ARM_ARCH_5)
++//	register uintptr_t __pthread_tpid asm ("r9");
++//	__pthread_tsd = (void**)__pthread_tpid;
++//#endif
++//	__pthread_tsd[slot] = val;
++//#else
++//#error no _pthread_setspecific_direct implementation for this arch
++//#endif
++//	return 0;
++//}
+ 
+ #endif
+ 
+diff --git a/include/_simple.h b/include/_simple.h
+index 2ae8384..8494f28 100644
+--- a/include/_simple.h
++++ b/include/_simple.h
+@@ -20,7 +20,7 @@
+  * 
+  * @APPLE_LICENSE_HEADER_END@
+  */
+-
++//11.5-libplatform-libplatform-254.80.2/private/_simple.h
+ #ifndef _SYSTEM_SIMPLE_H_
+ #define _SYSTEM_SIMPLE_H_
+ 
+diff --git a/include/kern/restartable.h b/include/kern/restartable.h
+index af6ba4d..4f5d461 100644
+--- a/include/kern/restartable.h
++++ b/include/kern/restartable.h
+@@ -25,7 +25,7 @@
+  *
+  * @APPLE_OSREFERENCE_LICENSE_HEADER_END@
+  */
+-
++//11.5-xnu-xnu-7195.141.2/osfmk/kern/restartable.h
+ #ifndef _KERN_RESTARTABLE_H_
+ #define _KERN_RESTARTABLE_H_
+ 
+diff --git a/include/mach-o/dyld_priv.h b/include/mach-o/dyld_priv.h
+index dede2fb..1f629ee 100644
+--- a/include/mach-o/dyld_priv.h
++++ b/include/mach-o/dyld_priv.h
+@@ -21,6 +21,7 @@
+  * 
+  * @APPLE_LICENSE_HEADER_END@
+  */
++///11.5-dyld-dyld-852.2/include/mach-o/dyld_priv.h
+ #ifndef _MACH_O_DYLD_PRIV_H_
+ #define _MACH_O_DYLD_PRIV_H_
+ 
+@@ -127,7 +128,7 @@ typedef struct {
+ } dyld_build_version_t;
+ 
+ // Returns the active platform of the process
+-extern dyld_platform_t dyld_get_active_platform(void) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0), bridgeos(3.0));
++extern dyld_platform_t dyld_get_active_platform(void) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0));
+ 
+ // Base platforms are platforms that have version numbers (macOS, iOS, watchos, tvOS, bridgeOS)
+ // All other platforms are mapped to a base platform for version checks
+@@ -153,27 +154,27 @@ extern dyld_platform_t dyld_get_active_platform(void) __API_AVAILABLE(macos(10.1
+ //      Old behaviour all other platforms, as well as older iOSes and watchOSes
+ //  }
+ 
+-extern dyld_platform_t dyld_get_base_platform(dyld_platform_t platform) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0), bridgeos(3.0));
++extern dyld_platform_t dyld_get_base_platform(dyld_platform_t platform) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0));
+ 
+ // SPI to ask if a platform is a simulation platform
+-extern bool dyld_is_simulator_platform(dyld_platform_t platform) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0), bridgeos(3.0));
++extern bool dyld_is_simulator_platform(dyld_platform_t platform) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0));
+ 
+ // Takes a version and returns if the image was built againt that SDK or newer
+ // In the case of multi_plaform mach-o's it tests against the active platform
+-extern bool dyld_sdk_at_least(const struct mach_header* mh, dyld_build_version_t version) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0), bridgeos(3.0));
++extern bool dyld_sdk_at_least(const struct mach_header* mh, dyld_build_version_t version) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0));
+ 
+ // Takes a version and returns if the image was built with that minos version or newer
+ // In the case of multi_plaform mach-o's it tests against the active platform
+-extern bool dyld_minos_at_least(const struct mach_header* mh, dyld_build_version_t version) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0), bridgeos(3.0));
++extern bool dyld_minos_at_least(const struct mach_header* mh, dyld_build_version_t version) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0));
+ 
+ // Convenience versions of the previous two functions that run against the the main executable
+-extern bool dyld_program_sdk_at_least(dyld_build_version_t version) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0), bridgeos(3.0));
+-extern bool dyld_program_minos_at_least(dyld_build_version_t version) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0), bridgeos(3.0));
++extern bool dyld_program_sdk_at_least(dyld_build_version_t version) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0));
++extern bool dyld_program_minos_at_least(dyld_build_version_t version) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0));
+ 
+ // Function that walks through the load commands and calls the internal block for every version found
+ // Intended as a fallback for very complex (and rare) version checks, or for tools that need to
+ // print our everything for diagnostic reasons
+-extern void dyld_get_image_versions(const struct mach_header* mh, void (^callback)(dyld_platform_t platform, uint32_t sdk_version, uint32_t min_version)) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0), bridgeos(3.0));
++extern void dyld_get_image_versions(const struct mach_header* mh, void (^callback)(dyld_platform_t platform, uint32_t sdk_version, uint32_t min_version)) __API_AVAILABLE(macos(10.14), ios(12.0), watchos(5.0), tvos(12.0));
+ 
+ // Convienence constants for dyld version SPIs.
+ 
+diff --git a/include/objc-shared-cache.h b/include/objc-shared-cache.h
+index ca587c9..a57f3a6 100644
+--- a/include/objc-shared-cache.h
++++ b/include/objc-shared-cache.h
+@@ -71,7 +71,7 @@ Source is http://burtleburtle.net/bob/c/perfect.c
+  * updated but then fails to write a table for some reason, libobjc 
+  * fixes up all metadata as if it were not marked.
+  */
+-
++//11.5-dyld-dyld-852.2/include/objc-shared-cache.h
+ #ifndef _OBJC_SELOPT_H
+ #define _OBJC_SELOPT_H
+ 
+diff --git a/include/os/linker_set.h b/include/os/linker_set.h
+index dc5a120..d0e8313 100644
+--- a/include/os/linker_set.h
++++ b/include/os/linker_set.h
+@@ -51,7 +51,7 @@
+  * SUCH DAMAGE.
+  *
+  */
+-
++//11.5-Libc-Libc-1439.141.1/os/linker_set.h
+ #ifndef _SYS_LINKER_SET_H_
+ #define _SYS_LINKER_SET_H_
+ 
+diff --git a/include/os/lock_private.h b/include/os/lock_private.h
+index ffc1991..283e46e 100644
+--- a/include/os/lock_private.h
++++ b/include/os/lock_private.h
+@@ -17,7 +17,7 @@
+  *
+  * @APPLE_APACHE_LICENSE_HEADER_END@
+  */
+-
++///11.5-libplatform-libplatform-254.80.2/private/os/lock_private.h
+ #ifndef __OS_LOCK_PRIVATE__
+ #define __OS_LOCK_PRIVATE__
+ 
+@@ -285,7 +285,7 @@ OS_OPTIONS(os_unfair_lock_options, uint32_t,
+ 		OS_UNFAIR_LOCK_AVAILABILITY = 0x00010000,
+ 	OS_UNFAIR_LOCK_ADAPTIVE_SPIN OS_SWIFT_NAME(AdaptiveSpin)
+ 		__API_AVAILABLE(macos(10.15), ios(13.0),
+-		tvos(13.0), watchos(6.0), bridgeos(4.0)) = 0x00040000,
++		tvos(13.0), watchos(6.0)) = 0x00040000,
+ );
+ 
+ #if __swift__
+@@ -573,7 +573,7 @@ OS_ASSUME_NONNULL_END
+  * Define OS_UNFAIR_LOCK_INLINE=1 to indicate that you have read the warning
+  * above and still wish to use these interfaces.
+  */
+-
++///11.5-libpthread-libpthread-454.120.2/private/pthread/tsd_private.h
+ #if defined(OS_UNFAIR_LOCK_INLINE) && OS_UNFAIR_LOCK_INLINE
+ 
+ #include <pthread/tsd_private.h>
+diff --git a/include/os/reason_private.h b/include/os/reason_private.h
+index 46aaceb..f108e5d 100644
+--- a/include/os/reason_private.h
++++ b/include/os/reason_private.h
+@@ -25,7 +25,7 @@
+  *
+  * @APPLE_OSREFERENCE_LICENSE_HEADER_END@
+  */
+-
++//11.5-xnu-xnu-7195.141.2/libkern/os/reason_private.h
+ #ifndef OS_REASON_PRIVATE_H
+ #define OS_REASON_PRIVATE_H
+ 
+diff --git a/include/os/tsd.h b/include/os/tsd.h
+index e4ab6d6..11b9ac9 100644
+--- a/include/os/tsd.h
++++ b/include/os/tsd.h
+@@ -25,6 +25,7 @@
+  *
+  * @APPLE_OSREFERENCE_LICENSE_HEADER_END@
+  */
++///11.5-xnu-xnu-7195.141.2/libsyscall/os/tsd.h
+ 
+ #ifndef OS_TSD_H
+ #define OS_TSD_H
+diff --git a/include/os/variant_private.h b/include/os/variant_private.h
+index 835db85..1746c5a 100644
+--- a/include/os/variant_private.h
++++ b/include/os/variant_private.h
+@@ -17,7 +17,7 @@
+  *
+  * @APPLE_APACHE_LICENSE_HEADER_END@
+  */
+-
++//11.5-Libc-Libc-1439.141.1/os/variant_private.h
+ #ifndef __OS_VARIANT_H__
+ #define __OS_VARIANT_H__
+ 
+@@ -214,7 +214,7 @@ os_variant_uses_ephemeral_storage(const char *subsystem);
+  * @result
+  * Returns true if this variant is BaseSystem
+  */
+-API_AVAILABLE(macosx(10.16)) API_UNAVAILABLE(ios, tvos, watchos, bridgeos)
++API_AVAILABLE(macosx(10.16)) API_UNAVAILABLE(ios, tvos, watchos)
+ OS_EXPORT OS_WARN_RESULT
+ bool
+ os_variant_is_basesystem(const char *subsystem);
+@@ -240,7 +240,7 @@ os_variant_is_basesystem(const char *subsystem);
+  * @result
+  * Returns true if this variant is a recoveryOS
+  */
+-API_AVAILABLE(macosx(10.15), ios(13.0), tvos(13.0), watchos(6.0), bridgeos(4.0))
++API_AVAILABLE(macosx(10.15), ios(13.0), tvos(13.0), watchos(6.0))
+ OS_EXPORT OS_WARN_RESULT
+ bool
+ os_variant_is_recovery(const char *subsystem);
+@@ -266,7 +266,7 @@ os_variant_is_recovery(const char *subsystem);
+  * @result
+  * Returns true if the system is of the specified variant.
+  */
+-API_AVAILABLE(macosx(10.15), ios(13.0), tvos(13.0), watchos(6.0), bridgeos(4.0))
++API_AVAILABLE(macosx(10.15), ios(13.0), tvos(13.0), watchos(6.0))
+ OS_EXPORT OS_WARN_RESULT
+ bool
+ os_variant_check(const char *subsystem, const char *variant);
+@@ -284,7 +284,7 @@ os_variant_check(const char *subsystem, const char *variant);
+  * error occurs, @c NULL is returned and @c errno will be set to indicate the
+  * error.
+  */
+-API_AVAILABLE(macosx(10.16), ios(14.0), tvos(13.0), watchos(7.0), bridgeos(4.0))
++API_AVAILABLE(macosx(10.16), ios(14.0), tvos(13.0), watchos(7.0))
+ OS_EXPORT OS_WARN_RESULT
+ char *
+ os_variant_copy_description(const char *subsystem);
+diff --git a/include/pthread/spinlock_private.h b/include/pthread/spinlock_private.h
+index b0289f6..3880b5e 100644
+--- a/include/pthread/spinlock_private.h
++++ b/include/pthread/spinlock_private.h
+@@ -48,7 +48,7 @@
+ /*
+  * POSIX Threads - IEEE 1003.1c
+  */
+-
++//11.5-libpthread-libpthread-454.120.2/private/pthread/spinlock_private.h
+ #ifndef _POSIX_PTHREAD_SPINLOCK_H
+ #define _POSIX_PTHREAD_SPINLOCK_H
+ 
+diff --git a/include/pthread/tsd_private.h b/include/pthread/tsd_private.h
+index 11daba0..6e27443 100644
+--- a/include/pthread/tsd_private.h
++++ b/include/pthread/tsd_private.h
+@@ -43,7 +43,7 @@
+ /*
+  * MkLinux
+  */
+-
++///11.5-libpthread-libpthread-454.120.2/private/pthread/tsd_private.h
+ #ifndef __PTHREAD_TSD_H__
+ #define __PTHREAD_TSD_H__
+ 
+diff --git a/include/sys/reason.h b/include/sys/reason.h
+index 3014085..118eeb8 100644
+--- a/include/sys/reason.h
++++ b/include/sys/reason.h
+@@ -25,7 +25,7 @@
+  *
+  * @APPLE_OSREFERENCE_LICENSE_HEADER_END@
+  */
+-
++///11.5-xnu-xnu-7195.141.2/bsd/sys/reason.h
+ #ifndef _REASON_H_
+ #define _REASON_H_
+ 
+diff --git a/objc.xcodeproj/project.pbxproj b/objc.xcodeproj/project.pbxproj
+index dc061f0..d6d5472 100644
+--- a/objc.xcodeproj/project.pbxproj
++++ b/objc.xcodeproj/project.pbxproj
+@@ -146,6 +146,25 @@
+ 		83F550E0155E030800E95D3B /* objc-cache-old.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83F550DF155E030800E95D3B /* objc-cache-old.mm */; };
+ 		87BB4EA70EC39854005D08E1 /* objc-probes.d in Sources */ = {isa = PBXBuildFile; fileRef = 87BB4E900EC39633005D08E1 /* objc-probes.d */; };
+ 		9672F7EE14D5F488007CEC96 /* NSObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9672F7ED14D5F488007CEC96 /* NSObject.mm */; };
++		C0D4827027BA076900710ACA /* reason.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4826F27BA076900710ACA /* reason.h */; };
++		C0D4827427BA07F600710ACA /* dyld_priv.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4827327BA07F600710ACA /* dyld_priv.h */; };
++		C0D4827627BA09A600710ACA /* Block_private.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4827527BA09A600710ACA /* Block_private.h */; };
++		C0D4827927BA0A0500710ACA /* lock_private.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4827827BA0A0500710ACA /* lock_private.h */; };
++		C0D4827D27BA361C00710ACA /* base_private.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4827C27BA361C00710ACA /* base_private.h */; };
++		C0D4828027BA379300710ACA /* tsd_private.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4827F27BA379300710ACA /* tsd_private.h */; };
++		C0D4828427BA385C00710ACA /* cpu_capabilities.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4828327BA385C00710ACA /* cpu_capabilities.h */; };
++		C0D4828627BA388E00710ACA /* tsd.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4828527BA388E00710ACA /* tsd.h */; };
++		C0D4828827BA3A3B00710ACA /* spinlock_private.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4828727BA3A3B00710ACA /* spinlock_private.h */; };
++		C0D4828D27BA4C4B00710ACA /* pthread_machdep.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4828C27BA4C4B00710ACA /* pthread_machdep.h */; };
++		C0D4828F27BA4C8E00710ACA /* CrashReporterClient.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4828E27BA4C8E00710ACA /* CrashReporterClient.h */; };
++		C0D4829127BA4EDA00710ACA /* objc-shared-cache.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4829027BA4EDA00710ACA /* objc-shared-cache.h */; };
++		C0D4829427BA503200710ACA /* restartable.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4829327BA503200710ACA /* restartable.h */; };
++		C0D4829627BA512000710ACA /* linker_set.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4829527BA512000710ACA /* linker_set.h */; };
++		C0D4829827BA5DED00710ACA /* _simple.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4829727BA5DED00710ACA /* _simple.h */; };
++		C0D4829A27BA5F0A00710ACA /* reason_private.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4829927BA5F0A00710ACA /* reason_private.h */; };
++		C0D4829C27BA5F3C00710ACA /* variant_private.h in Headers */ = {isa = PBXBuildFile; fileRef = C0D4829B27BA5F3C00710ACA /* variant_private.h */; };
++		C0D482A427BA626F00710ACA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C0D482A327BA626F00710ACA /* main.m */; };
++		C0D482AA27BA648D00710ACA /* libobjc.A.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC0630554660B00DB518D /* libobjc.A.dylib */; };
+ 		C22F5208230EF38B001BFE14 /* objc-ptrauth.h in Headers */ = {isa = PBXBuildFile; fileRef = C22F5207230EF38B001BFE14 /* objc-ptrauth.h */; };
+ 		C269791A2645D7AE009C19E3 /* NSObject-private.h in Headers */ = {isa = PBXBuildFile; fileRef = C26979192645D7AE009C19E3 /* NSObject-private.h */; };
+ 		C2E6D3FC2225DCF00059DFAA /* DenseMapExtras.h in Headers */ = {isa = PBXBuildFile; fileRef = C2E6D3FB2225DCF00059DFAA /* DenseMapExtras.h */; };
+@@ -171,6 +190,13 @@
+ 			remoteGlobalIDString = D2AAC0620554660B00DB518D;
+ 			remoteInfo = objc;
+ 		};
++		C0D482A827BA648600710ACA /* PBXContainerItemProxy */ = {
++			isa = PBXContainerItemProxy;
++			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
++			proxyType = 1;
++			remoteGlobalIDString = D2AAC0620554660B00DB518D;
++			remoteInfo = objc;
++		};
+ 		F9BCC728205C6A0900DD9AFC /* PBXContainerItemProxy */ = {
+ 			isa = PBXContainerItemProxy;
+ 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+@@ -192,6 +218,15 @@
+ 			name = "Install Manpages";
+ 			runOnlyForDeploymentPostprocessing = 1;
+ 		};
++		C0D4829F27BA626E00710ACA /* CopyFiles */ = {
++			isa = PBXCopyFilesBuildPhase;
++			buildActionMask = 2147483647;
++			dstPath = /usr/share/man/man1/;
++			dstSubfolderSpec = 0;
++			files = (
++			);
++			runOnlyForDeploymentPostprocessing = 1;
++		};
+ 		E934A9F023E996CC0088F26F /* CopyFiles */ = {
+ 			isa = PBXCopyFilesBuildPhase;
+ 			buildActionMask = 8;
+@@ -314,6 +349,25 @@
+ 		87BB4E900EC39633005D08E1 /* objc-probes.d */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.dtrace; name = "objc-probes.d"; path = "runtime/objc-probes.d"; sourceTree = "<group>"; };
+ 		9672F7ED14D5F488007CEC96 /* NSObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NSObject.mm; path = runtime/NSObject.mm; sourceTree = "<group>"; };
+ 		BC8B5D1212D3D48100C78A5B /* libauto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libauto.dylib; path = /usr/lib/libauto.dylib; sourceTree = "<absolute>"; };
++		C0D4826F27BA076900710ACA /* reason.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reason.h; sourceTree = "<group>"; };
++		C0D4827327BA07F600710ACA /* dyld_priv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dyld_priv.h; sourceTree = "<group>"; };
++		C0D4827527BA09A600710ACA /* Block_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Block_private.h; sourceTree = "<group>"; };
++		C0D4827827BA0A0500710ACA /* lock_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lock_private.h; sourceTree = "<group>"; };
++		C0D4827C27BA361C00710ACA /* base_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base_private.h; sourceTree = "<group>"; };
++		C0D4827F27BA379300710ACA /* tsd_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsd_private.h; sourceTree = "<group>"; };
++		C0D4828327BA385C00710ACA /* cpu_capabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cpu_capabilities.h; sourceTree = "<group>"; };
++		C0D4828527BA388E00710ACA /* tsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsd.h; sourceTree = "<group>"; };
++		C0D4828727BA3A3B00710ACA /* spinlock_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock_private.h; sourceTree = "<group>"; };
++		C0D4828C27BA4C4B00710ACA /* pthread_machdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pthread_machdep.h; sourceTree = "<group>"; };
++		C0D4828E27BA4C8E00710ACA /* CrashReporterClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReporterClient.h; sourceTree = "<group>"; };
++		C0D4829027BA4EDA00710ACA /* objc-shared-cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "objc-shared-cache.h"; sourceTree = "<group>"; };
++		C0D4829327BA503200710ACA /* restartable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = restartable.h; sourceTree = "<group>"; };
++		C0D4829527BA512000710ACA /* linker_set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linker_set.h; sourceTree = "<group>"; };
++		C0D4829727BA5DED00710ACA /* _simple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _simple.h; sourceTree = "<group>"; };
++		C0D4829927BA5F0A00710ACA /* reason_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reason_private.h; sourceTree = "<group>"; };
++		C0D4829B27BA5F3C00710ACA /* variant_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = variant_private.h; sourceTree = "<group>"; };
++		C0D482A127BA626E00710ACA /* objc_debug */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = objc_debug; sourceTree = BUILT_PRODUCTS_DIR; };
++		C0D482A327BA626F00710ACA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+ 		C217B55222DE556D004369BA /* objc-env.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "objc-env.h"; path = "runtime/objc-env.h"; sourceTree = "<group>"; };
+ 		C22F5207230EF38B001BFE14 /* objc-ptrauth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "objc-ptrauth.h"; path = "runtime/objc-ptrauth.h"; sourceTree = "<group>"; };
+ 		C26979192645D7AE009C19E3 /* NSObject-private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject-private.h"; path = "runtime/NSObject-private.h"; sourceTree = "<group>"; };
+@@ -341,6 +395,14 @@
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
++		C0D4829E27BA626E00710ACA /* Frameworks */ = {
++			isa = PBXFrameworksBuildPhase;
++			buildActionMask = 2147483647;
++			files = (
++				C0D482AA27BA648D00710ACA /* libobjc.A.dylib in Frameworks */,
++			);
++			runOnlyForDeploymentPostprocessing = 0;
++		};
+ 		D289988505E68E00004EDB86 /* Frameworks */ = {
+ 			isa = PBXFrameworksBuildPhase;
+ 			buildActionMask = 2147483647;
+@@ -361,6 +423,7 @@
+ 		08FB7794FE84155DC02AAC07 /* objc */ = {
+ 			isa = PBXGroup;
+ 			children = (
++				C0D4826D27BA06CA00710ACA /* include */,
+ 				BC8B5D1212D3D48100C78A5B /* libauto.dylib */,
+ 				838485C60D6D687700CEA253 /* Public Headers */,
+ 				838485C70D6D688200CEA253 /* Private Headers */,
+@@ -371,6 +434,7 @@
+ 				838485B20D6D67F900CEA253 /* Other */,
+ 				6EF877D82325D62600963DBB /* objcdt */,
+ 				E9AD465824925261002AF1DB /* check-preopt-caches */,
++				C0D482A227BA626F00710ACA /* objc_debug */,
+ 				1AB674ADFE9D54B511CA2CBB /* Products */,
+ 				F9BCC72A205C6A1600DD9AFC /* Frameworks */,
+ 			);
+@@ -436,6 +500,7 @@
+ 				D2AAC0630554660B00DB518D /* libobjc.A.dylib */,
+ 				F9BCC727205C68E800DD9AFC /* libobjc-trampolines.dylib */,
+ 				6EF877D72325D62600963DBB /* objcdt */,
++				C0D482A127BA626E00710ACA /* objc_debug */,
+ 			);
+ 			name = Products;
+ 			sourceTree = "<group>";
+@@ -557,6 +622,94 @@
+ 			name = "Project Headers";
+ 			sourceTree = "<group>";
+ 		};
++		C0D4826D27BA06CA00710ACA /* include */ = {
++			isa = PBXGroup;
++			children = (
++				C0D4829727BA5DED00710ACA /* _simple.h */,
++				C0D4827527BA09A600710ACA /* Block_private.h */,
++				C0D4828E27BA4C8E00710ACA /* CrashReporterClient.h */,
++				C0D4829027BA4EDA00710ACA /* objc-shared-cache.h */,
++				C0D4829227BA502800710ACA /* kern */,
++				C0D4827227BA079D00710ACA /* mach-o */,
++				C0D4827727BA09FD00710ACA /* os */,
++				C0D4827E27BA378900710ACA /* pthread */,
++				C0D4826E27BA071400710ACA /* sys */,
++				C0D4828127BA384C00710ACA /* System */,
++			);
++			path = include;
++			sourceTree = "<group>";
++		};
++		C0D4826E27BA071400710ACA /* sys */ = {
++			isa = PBXGroup;
++			children = (
++				C0D4826F27BA076900710ACA /* reason.h */,
++			);
++			path = sys;
++			sourceTree = "<group>";
++		};
++		C0D4827227BA079D00710ACA /* mach-o */ = {
++			isa = PBXGroup;
++			children = (
++				C0D4827327BA07F600710ACA /* dyld_priv.h */,
++			);
++			path = "mach-o";
++			sourceTree = "<group>";
++		};
++		C0D4827727BA09FD00710ACA /* os */ = {
++			isa = PBXGroup;
++			children = (
++				C0D4829B27BA5F3C00710ACA /* variant_private.h */,
++				C0D4829927BA5F0A00710ACA /* reason_private.h */,
++				C0D4829527BA512000710ACA /* linker_set.h */,
++				C0D4828527BA388E00710ACA /* tsd.h */,
++				C0D4827C27BA361C00710ACA /* base_private.h */,
++				C0D4827827BA0A0500710ACA /* lock_private.h */,
++			);
++			path = os;
++			sourceTree = "<group>";
++		};
++		C0D4827E27BA378900710ACA /* pthread */ = {
++			isa = PBXGroup;
++			children = (
++				C0D4827F27BA379300710ACA /* tsd_private.h */,
++				C0D4828727BA3A3B00710ACA /* spinlock_private.h */,
++			);
++			path = pthread;
++			sourceTree = "<group>";
++		};
++		C0D4828127BA384C00710ACA /* System */ = {
++			isa = PBXGroup;
++			children = (
++				C0D4828C27BA4C4B00710ACA /* pthread_machdep.h */,
++				C0D4828227BA385400710ACA /* machine */,
++			);
++			path = System;
++			sourceTree = "<group>";
++		};
++		C0D4828227BA385400710ACA /* machine */ = {
++			isa = PBXGroup;
++			children = (
++				C0D4828327BA385C00710ACA /* cpu_capabilities.h */,
++			);
++			path = machine;
++			sourceTree = "<group>";
++		};
++		C0D4829227BA502800710ACA /* kern */ = {
++			isa = PBXGroup;
++			children = (
++				C0D4829327BA503200710ACA /* restartable.h */,
++			);
++			path = kern;
++			sourceTree = "<group>";
++		};
++		C0D482A227BA626F00710ACA /* objc_debug */ = {
++			isa = PBXGroup;
++			children = (
++				C0D482A327BA626F00710ACA /* main.m */,
++			);
++			path = objc_debug;
++			sourceTree = "<group>";
++		};
+ 		E9AD465824925261002AF1DB /* check-preopt-caches */ = {
+ 			isa = PBXGroup;
+ 			children = (
+@@ -592,9 +745,12 @@
+ 			isa = PBXHeadersBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
++				C0D4828D27BA4C4B00710ACA /* pthread_machdep.h in Headers */,
+ 				83A4AEDE1EA08C7200ACADDE /* ObjectiveC.apinotes in Headers */,
+ 				75A95051202BAA9A00D7D56F /* objc-locks.h in Headers */,
++				C0D4829427BA503200710ACA /* restartable.h in Headers */,
+ 				6E1475ED21DFDB1B001357EA /* llvm-type_traits.h in Headers */,
++				C0D4827927BA0A0500710ACA /* lock_private.h in Headers */,
+ 				83A4AEDC1EA0840800ACADDE /* module.modulemap in Headers */,
+ 				830F2A980D738DC200392440 /* hashtable.h in Headers */,
+ 				6EACB842232C97A400CE9176 /* objc-zalloc.h in Headers */,
+@@ -602,22 +758,34 @@
+ 				838485BF0D6D687300CEA253 /* hashtable2.h in Headers */,
+ 				6E1475EC21DFDB1B001357EA /* llvm-DenseMapInfo.h in Headers */,
+ 				C2E6D3FC2225DCF00059DFAA /* DenseMapExtras.h in Headers */,
++				C0D4828F27BA4C8E00710ACA /* CrashReporterClient.h in Headers */,
+ 				838486260D6D68F000CEA253 /* List.h in Headers */,
+ 				838485C30D6D687300CEA253 /* maptable.h in Headers */,
++				C0D4828827BA3A3B00710ACA /* spinlock_private.h in Headers */,
+ 				838486280D6D6A2400CEA253 /* message.h in Headers */,
+ 				834EC0A411614167009B2563 /* objc-abi.h in Headers */,
++				C0D4827427BA07F600710ACA /* dyld_priv.h in Headers */,
+ 				838485EF0D6D68A200CEA253 /* objc-api.h in Headers */,
++				C0D4829127BA4EDA00710ACA /* objc-shared-cache.h in Headers */,
+ 				838485F00D6D68A200CEA253 /* objc-auto.h in Headers */,
+ 				838485F40D6D68A200CEA253 /* objc-class.h in Headers */,
++				C0D4829827BA5DED00710ACA /* _simple.h in Headers */,
+ 				838485F60D6D68A200CEA253 /* objc-config.h in Headers */,
++				C0D4829A27BA5F0A00710ACA /* reason_private.h in Headers */,
++				C0D4829C27BA5F3C00710ACA /* variant_private.h in Headers */,
++				C0D4828027BA379300710ACA /* tsd_private.h in Headers */,
+ 				6E1475EE21DFDB1B001357EA /* llvm-MathExtras.h in Headers */,
++				C0D4828427BA385C00710ACA /* cpu_capabilities.h in Headers */,
+ 				838485F80D6D68A200CEA253 /* objc-exception.h in Headers */,
+ 				F378CAC725534BC000AC8F83 /* module.modulemap in Headers */,
+ 				83BE02E80FCCB24D00661494 /* objc-file-old.h in Headers */,
++				C0D4828627BA388E00710ACA /* tsd.h in Headers */,
+ 				83BE02E90FCCB24D00661494 /* objc-file.h in Headers */,
++				C0D4827627BA09A600710ACA /* Block_private.h in Headers */,
+ 				75A9504F202BAA0600D7D56F /* objc-locks-new.h in Headers */,
+ 				834266D80E665A8B002E4DA2 /* objc-gdb.h in Headers */,
+ 				838485FB0D6D68A200CEA253 /* objc-initialize.h in Headers */,
++				C0D4827027BA076900710ACA /* reason.h in Headers */,
+ 				7593EC58202248E50046AB96 /* objc-object.h in Headers */,
+ 				83112ED40F00599600A5FBAF /* objc-internal.h in Headers */,
+ 				838485FE0D6D68A200CEA253 /* objc-load.h in Headers */,
+@@ -629,6 +797,7 @@
+ 				6E1475EB21DFDB1B001357EA /* llvm-DenseMap.h in Headers */,
+ 				838486070D6D68A200CEA253 /* objc-runtime-new.h in Headers */,
+ 				83BE02EA0FCCB24D00661494 /* objc-runtime-old.h in Headers */,
++				C0D4827D27BA361C00710ACA /* base_private.h in Headers */,
+ 				8384860A0D6D68A200CEA253 /* objc-runtime.h in Headers */,
+ 				C269791A2645D7AE009C19E3 /* NSObject-private.h in Headers */,
+ 				8384860C0D6D68A200CEA253 /* objc-sel-set.h in Headers */,
+@@ -645,6 +814,7 @@
+ 				83F4B52815E843B100E0926F /* NSObjCRuntime.h in Headers */,
+ 				C22F5208230EF38B001BFE14 /* objc-ptrauth.h in Headers */,
+ 				6ECD0B1F2244999E00910D88 /* llvm-DenseSet.h in Headers */,
++				C0D4829627BA512000710ACA /* linker_set.h in Headers */,
+ 				83F4B52915E843B100E0926F /* NSObject.h in Headers */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+@@ -669,6 +839,24 @@
+ 			productReference = 6EF877D72325D62600963DBB /* objcdt */;
+ 			productType = "com.apple.product-type.tool";
+ 		};
++		C0D482A027BA626E00710ACA /* objc_debug */ = {
++			isa = PBXNativeTarget;
++			buildConfigurationList = C0D482A527BA626F00710ACA /* Build configuration list for PBXNativeTarget "objc_debug" */;
++			buildPhases = (
++				C0D4829D27BA626E00710ACA /* Sources */,
++				C0D4829E27BA626E00710ACA /* Frameworks */,
++				C0D4829F27BA626E00710ACA /* CopyFiles */,
++			);
++			buildRules = (
++			);
++			dependencies = (
++				C0D482A927BA648600710ACA /* PBXTargetDependency */,
++			);
++			name = objc_debug;
++			productName = objc_debug;
++			productReference = C0D482A127BA626E00710ACA /* objc_debug */;
++			productType = "com.apple.product-type.tool";
++		};
+ 		D2AAC0620554660B00DB518D /* objc */ = {
+ 			isa = PBXNativeTarget;
+ 			buildConfigurationList = 1DEB914A08733D8E0010E9CD /* Build configuration list for PBXNativeTarget "objc" */;
+@@ -730,6 +918,11 @@
+ 					837F67A81A771F63004D34FA = {
+ 						CreatedOnToolsVersion = 6.3;
+ 					};
++					C0D482A027BA626E00710ACA = {
++						CreatedOnToolsVersion = 13.2;
++						DevelopmentTeam = RC6M5R48N8;
++						ProvisioningStyle = Automatic;
++					};
+ 				};
+ 			};
+ 			buildConfigurationList = 1DEB914E08733D8E0010E9CD /* Build configuration list for PBXProject "objc" */;
+@@ -752,6 +945,7 @@
+ 				834F9B01212E560100F95A54 /* objc4_tests */,
+ 				6EF877EF23263D7000963DBB /* objc_executables */,
+ 				6EF877D62325D62600963DBB /* objcdt */,
++				C0D482A027BA626E00710ACA /* objc_debug */,
+ 			);
+ 		};
+ /* End PBXProject section */
+@@ -770,7 +964,7 @@
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 			shellPath = /bin/sh;
+-			shellScript = "set -x\n/usr/bin/xcrun -sdk macosx.internal clang++ -Wall -mmacosx-version-min=10.12 -arch x86_64 -std=c++11 \"${SRCROOT}/markgc.cpp\" -o \"${BUILT_PRODUCTS_DIR}/markgc\"\n\"${BUILT_PRODUCTS_DIR}/markgc\" \"${BUILT_PRODUCTS_DIR}/libobjc.A.dylib\"";
++			shellScript = "set -x\n/usr/bin/xcrun -sdk macosx clang++ -Wall -mmacosx-version-min=10.12 -arch x86_64 -std=c++11 \"${SRCROOT}/markgc.cpp\" -o \"${BUILT_PRODUCTS_DIR}/markgc\"\n\"${BUILT_PRODUCTS_DIR}/markgc\" \"${BUILT_PRODUCTS_DIR}/libobjc.A.dylib\"\n";
+ 		};
+ 		830F2AFA0D73BC5800392440 /* Run Script (symlink) */ = {
+ 			isa = PBXShellScriptBuildPhase;
+@@ -817,6 +1011,14 @@
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
++		C0D4829D27BA626E00710ACA /* Sources */ = {
++			isa = PBXSourcesBuildPhase;
++			buildActionMask = 2147483647;
++			files = (
++				C0D482A427BA626F00710ACA /* main.m in Sources */,
++			);
++			runOnlyForDeploymentPostprocessing = 0;
++		};
+ 		D2AAC0610554660B00DB518D /* Sources */ = {
+ 			isa = PBXSourcesBuildPhase;
+ 			buildActionMask = 2147483647;
+@@ -892,6 +1094,11 @@
+ 			target = D2AAC0620554660B00DB518D /* objc */;
+ 			targetProxy = 837F67AC1A771F6E004D34FA /* PBXContainerItemProxy */;
+ 		};
++		C0D482A927BA648600710ACA /* PBXTargetDependency */ = {
++			isa = PBXTargetDependency;
++			target = D2AAC0620554660B00DB518D /* objc */;
++			targetProxy = C0D482A827BA648600710ACA /* PBXContainerItemProxy */;
++		};
+ 		F9BCC729205C6A0900DD9AFC /* PBXTargetDependency */ = {
+ 			isa = PBXTargetDependency;
+ 			target = F9BCC6CA205C68E800DD9AFC /* objc-trampolines */;
+@@ -914,6 +1121,11 @@
+ 				EXECUTABLE_PREFIX = lib;
+ 				GCC_CW_ASM_SYNTAX = NO;
+ 				GCC_OPTIMIZATION_LEVEL = 0;
++				GCC_PREPROCESSOR_DEFINITIONS = (
++					"OS_OBJECT_USE_OBJC=0",
++					"OBJC_IS_DEBUG_BUILD=1",
++					LIBC_NO_LIBCRASHREPORTERCLIENT,
++				);
+ 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+ 				HEADER_SEARCH_PATHS = (
+ 					"$(DSTROOT)/usr/include/**",
+@@ -921,6 +1133,7 @@
+ 					"$(CONFIGURATION_BUILD_DIR)/usr/include/**",
+ 					"$(CONFIGURATION_BUILD_DIR)/usr/local/include/**",
+ 					/System/Library/Frameworks/System.framework/PrivateHeaders,
++					"$(SRCROOT)/include",
+ 				);
+ 				"INCLUDED_SOURCE_FILE_NAMES[sdk=macosx*][arch=i386]" = "dummy-library-mac-i386.c";
+ 				INSTALL_PATH = /usr/lib;
+@@ -959,7 +1172,6 @@
+ 					interposable.txt,
+ 				);
+ 				"OTHER_LDFLAGS[sdk=macosx*]" = (
+-					"-lCrashReporterClient",
+ 					"-lc++abi",
+ 					"-Xlinker",
+ 					"-sectalign",
+@@ -973,13 +1185,13 @@
+ 					"-interposable_list",
+ 					"-Xlinker",
+ 					interposable.txt,
+-					"-loah",
+ 				);
+ 				"OTHER_LDFLAGS[sdk=macosx*][arch=i386]" = "-nodefaultlibs";
+ 				OTHER_TAPI_FLAGS = "-exclude-public-header $(DSTROOT)/usr/include/objc/ObjectiveC.apinotes -exclude-public-header $(DSTROOT)/usr/include/objc/module.modulemap -Xparser -Wno-deprecated-declarations -Xparser -Wno-unavailable-declarations -Xparser -D_OBJC_PRIVATE_H_=1 -DOBJC_DECLARE_SYMBOLS=1";
+ 				PRIVATE_HEADERS_FOLDER_PATH = /usr/local/include/objc;
+ 				PRODUCT_NAME = objc.A;
+ 				PUBLIC_HEADERS_FOLDER_PATH = /usr/include/objc;
++				SDKROOT = macosx;
+ 				SUPPORTS_TEXT_BASED_API = YES;
+ 				TAPI_VERIFY_MODE = Pedantic;
+ 				UNEXPORTED_SYMBOLS_FILE = unexported_symbols;
+@@ -1063,6 +1275,7 @@
+ 				PRIVATE_HEADERS_FOLDER_PATH = /usr/local/include/objc;
+ 				PRODUCT_NAME = objc.A;
+ 				PUBLIC_HEADERS_FOLDER_PATH = /usr/include/objc;
++				SDKROOT = macosx;
+ 				SUPPORTS_TEXT_BASED_API = YES;
+ 				TAPI_VERIFY_MODE = Pedantic;
+ 				UNEXPORTED_SYMBOLS_FILE = unexported_symbols;
+@@ -1106,7 +1319,7 @@
+ 					"$(OTHER_CFLAGS)",
+ 					"-D_LIBCPP_VISIBLE=\"\"",
+ 				);
+-				SDKROOT = macosx.internal;
++				SDKROOT = macosx;
+ 				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos watchos";
+ 				WARNING_CFLAGS = (
+ 					"-Wall",
+@@ -1155,7 +1368,7 @@
+ 					"$(OTHER_CFLAGS)",
+ 					"-D_LIBCPP_VISIBLE=\"\"",
+ 				);
+-				SDKROOT = macosx.internal;
++				SDKROOT = macosx;
+ 				SUPPORTED_PLATFORMS = "macosx iphoneos appletvos watchos";
+ 				WARNING_CFLAGS = (
+ 					"-Wall",
+@@ -1254,6 +1467,114 @@
+ 			};
+ 			name = Release;
+ 		};
++		C0D482A627BA626F00710ACA /* Debug */ = {
++			isa = XCBuildConfiguration;
++			buildSettings = {
++				ALWAYS_SEARCH_USER_PATHS = NO;
++				CLANG_ANALYZER_NONNULL = YES;
++				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
++				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
++				CLANG_ENABLE_MODULES = YES;
++				CLANG_ENABLE_OBJC_ARC = YES;
++				CLANG_ENABLE_OBJC_WEAK = YES;
++				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
++				CLANG_WARN_BOOL_CONVERSION = YES;
++				CLANG_WARN_COMMA = YES;
++				CLANG_WARN_CONSTANT_CONVERSION = YES;
++				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
++				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
++				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
++				CLANG_WARN_EMPTY_BODY = YES;
++				CLANG_WARN_ENUM_CONVERSION = YES;
++				CLANG_WARN_INFINITE_RECURSION = YES;
++				CLANG_WARN_INT_CONVERSION = YES;
++				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
++				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
++				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
++				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
++				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
++				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
++				CLANG_WARN_STRICT_PROTOTYPES = YES;
++				CLANG_WARN_SUSPICIOUS_MOVE = YES;
++				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
++				CLANG_WARN_UNREACHABLE_CODE = YES;
++				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
++				CODE_SIGN_STYLE = Automatic;
++				COPY_PHASE_STRIP = NO;
++				DEVELOPMENT_TEAM = RC6M5R48N8;
++				ENABLE_HARDENED_RUNTIME = YES;
++				ENABLE_STRICT_OBJC_MSGSEND = YES;
++				ENABLE_TESTABILITY = YES;
++				GCC_C_LANGUAGE_STANDARD = gnu11;
++				GCC_DYNAMIC_NO_PIC = NO;
++				GCC_NO_COMMON_BLOCKS = YES;
++				GCC_PREPROCESSOR_DEFINITIONS = (
++					"DEBUG=1",
++					"$(inherited)",
++				);
++				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
++				GCC_WARN_UNDECLARED_SELECTOR = YES;
++				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
++				GCC_WARN_UNUSED_FUNCTION = YES;
++				MACOSX_DEPLOYMENT_TARGET = 12.0;
++				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
++				MTL_FAST_MATH = YES;
++				ONLY_ACTIVE_ARCH = YES;
++				PRODUCT_NAME = "$(TARGET_NAME)";
++			};
++			name = Debug;
++		};
++		C0D482A727BA626F00710ACA /* Release */ = {
++			isa = XCBuildConfiguration;
++			buildSettings = {
++				ALWAYS_SEARCH_USER_PATHS = NO;
++				CLANG_ANALYZER_NONNULL = YES;
++				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
++				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
++				CLANG_ENABLE_MODULES = YES;
++				CLANG_ENABLE_OBJC_ARC = YES;
++				CLANG_ENABLE_OBJC_WEAK = YES;
++				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
++				CLANG_WARN_BOOL_CONVERSION = YES;
++				CLANG_WARN_COMMA = YES;
++				CLANG_WARN_CONSTANT_CONVERSION = YES;
++				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
++				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
++				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
++				CLANG_WARN_EMPTY_BODY = YES;
++				CLANG_WARN_ENUM_CONVERSION = YES;
++				CLANG_WARN_INFINITE_RECURSION = YES;
++				CLANG_WARN_INT_CONVERSION = YES;
++				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
++				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
++				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
++				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
++				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
++				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
++				CLANG_WARN_STRICT_PROTOTYPES = YES;
++				CLANG_WARN_SUSPICIOUS_MOVE = YES;
++				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
++				CLANG_WARN_UNREACHABLE_CODE = YES;
++				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
++				CODE_SIGN_STYLE = Automatic;
++				COPY_PHASE_STRIP = NO;
++				DEVELOPMENT_TEAM = RC6M5R48N8;
++				ENABLE_HARDENED_RUNTIME = YES;
++				ENABLE_NS_ASSERTIONS = NO;
++				ENABLE_STRICT_OBJC_MSGSEND = YES;
++				GCC_C_LANGUAGE_STANDARD = gnu11;
++				GCC_NO_COMMON_BLOCKS = YES;
++				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
++				GCC_WARN_UNDECLARED_SELECTOR = YES;
++				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
++				GCC_WARN_UNUSED_FUNCTION = YES;
++				MACOSX_DEPLOYMENT_TARGET = 12.0;
++				MTL_ENABLE_DEBUG_INFO = NO;
++				MTL_FAST_MATH = YES;
++				PRODUCT_NAME = "$(TARGET_NAME)";
++			};
++			name = Release;
++		};
+ 		F9BCC725205C68E800DD9AFC /* Debug */ = {
+ 			isa = XCBuildConfiguration;
+ 			buildSettings = {
+@@ -1289,6 +1610,7 @@
+ 				PRIVATE_HEADERS_FOLDER_PATH = /usr/local/include/objc;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				PUBLIC_HEADERS_FOLDER_PATH = /usr/include/objc;
++				SDKROOT = macosx;
+ 				SUPPORTS_TEXT_BASED_API = YES;
+ 				TAPI_VERIFY_MODE = Pedantic;
+ 			};
+@@ -1327,6 +1649,7 @@
+ 				PRIVATE_HEADERS_FOLDER_PATH = /usr/local/include/objc;
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				PUBLIC_HEADERS_FOLDER_PATH = /usr/include/objc;
++				SDKROOT = macosx;
+ 				SUPPORTS_TEXT_BASED_API = YES;
+ 				TAPI_VERIFY_MODE = Pedantic;
+ 			};
+@@ -1389,6 +1712,15 @@
+ 			defaultConfigurationIsVisible = 0;
+ 			defaultConfigurationName = Release;
+ 		};
++		C0D482A527BA626F00710ACA /* Build configuration list for PBXNativeTarget "objc_debug" */ = {
++			isa = XCConfigurationList;
++			buildConfigurations = (
++				C0D482A627BA626F00710ACA /* Debug */,
++				C0D482A727BA626F00710ACA /* Release */,
++			);
++			defaultConfigurationIsVisible = 0;
++			defaultConfigurationName = Release;
++		};
+ 		F9BCC724205C68E800DD9AFC /* Build configuration list for PBXNativeTarget "objc-trampolines" */ = {
+ 			isa = XCConfigurationList;
+ 			buildConfigurations = (
+diff --git a/objc_debug/main.m b/objc_debug/main.m
+index 8dd557b..bf0f67a 100644
+--- a/objc_debug/main.m
++++ b/objc_debug/main.m
+@@ -10,7 +10,8 @@
+ int main(int argc, const char * argv[]) {
+     @autoreleasepool {
+         // insert code here...
+-        NSLog(@"Hello, World!");
++        NSLog(@"You can start debugging objc here\n");
++        NSLog(@"你可以开始debug objc了\n");
+     }
+     return 0;
+ }
+diff --git a/runtime/NSObject.mm b/runtime/NSObject.mm
+index c0fcd1e..0405a2c 100644
+--- a/runtime/NSObject.mm
++++ b/runtime/NSObject.mm
+@@ -40,7 +40,7 @@
+ #include <execinfo.h>
+ #include "NSObject-internal.h"
+ #include "NSObject-private.h"
+-#include <os/feature_private.h>
++//#include <os/feature_private.h>
+ 
+ extern "C" {
+ #include <os/reason_private.h>
+@@ -1144,11 +1144,11 @@ static void badPop(void *token)
+         // Error. For bincompat purposes this is not 
+         // fatal in executables built with old SDKs.
+ 
+-        if (DebugPoolAllocation || sdkIsAtLeast(10_12, 10_0, 10_0, 3_0, 2_0)) {
+-            // OBJC_DEBUG_POOL_ALLOCATION or new SDK. Bad pop is fatal.
+-            _objc_fatal
+-                ("Invalid or prematurely-freed autorelease pool %p.", token);
+-        }
++//        if (DebugPoolAllocation || sdkIsAtLeast(10_12, 10_0, 10_0, 3_0, 2_0)) {
++//            // OBJC_DEBUG_POOL_ALLOCATION or new SDK. Bad pop is fatal.
++//            _objc_fatal
++//                ("Invalid or prematurely-freed autorelease pool %p.", token);
++//        }
+ 
+         // Old SDK. Bad pop is warned once.
+         static bool complained = false;
+diff --git a/runtime/objc-cache.mm b/runtime/objc-cache.mm
+index d9f472b..b42b219 100644
+--- a/runtime/objc-cache.mm
++++ b/runtime/objc-cache.mm
+@@ -84,8 +84,8 @@
+ #include "objc-private.h"
+ 
+ #if TARGET_OS_OSX
+-#include <Cambria/Traps.h>
+-#include <Cambria/Cambria.h>
++//#include <Cambria/Traps.h>
++//#include <Cambria/Cambria.h>
+ #endif
+ 
+ #if __arm__  ||  __x86_64__  ||  __i386__
+@@ -1119,18 +1119,18 @@ static int _collecting_in_critical(void)
+             continue;
+ 
+         // Find out where thread is executing
+-#if TARGET_OS_OSX
+-        if (oah_is_current_process_translated()) {
+-            kern_return_t ret = objc_thread_get_rip(threads[count], (uint64_t*)&pc);
+-            if (ret != KERN_SUCCESS) {
+-                pc = PC_SENTINEL;
+-            }
+-        } else {
+-            pc = _get_pc_for_thread (threads[count]);
+-        }
+-#else
++//#if TARGET_OS_OSX
++//        if (oah_is_current_process_translated()) {
++//            kern_return_t ret = objc_thread_get_rip(threads[count], (uint64_t*)&pc);
++//            if (ret != KERN_SUCCESS) {
++//                pc = PC_SENTINEL;
++//            }
++//        } else {
++//            pc = _get_pc_for_thread (threads[count]);
++//        }
++//#else
+         pc = _get_pc_for_thread (threads[count]);
+-#endif
++//#endif
+ 
+         // Check for bad status, and if so, assume the worse (can't collect)
+         if (pc == PC_SENTINEL)
+diff --git a/runtime/objc-opt.mm b/runtime/objc-opt.mm
+index 27ac400..0e9ec86 100644
+--- a/runtime/objc-opt.mm
++++ b/runtime/objc-opt.mm
+@@ -384,7 +384,8 @@ unsigned int getPreoptimizedClassUnreasonableCount()
+     // Unless explicitly told to disable the optimization
+     if (DisablePreopt) return 0;
+ 
+-    return _dyld_objc_class_count();
++//    return _dyld_objc_class_count();
++    return 0;
+ }
+ 
+ 
+diff --git a/runtime/objc-os.mm b/runtime/objc-os.mm
+index c150343..a3ee079 100644
+--- a/runtime/objc-os.mm
++++ b/runtime/objc-os.mm
+@@ -565,14 +565,14 @@ void objc_addLoadImageFunc(objc_func_loadImage _Nonnull func) {
+         // Disable +initialize fork safety if the app has a
+         //   __DATA,__objc_fork_ok section.
+ 
+-        if (!dyld_program_sdk_at_least(dyld_platform_version_macOS_10_13)) {
+-            DisableInitializeForkSafety = true;
+-            if (PrintInitializing) {
+-                _objc_inform("INITIALIZE: disabling +initialize fork "
+-                             "safety enforcement because the app is "
+-                             "too old.)");
+-            }
+-        }
++//        if (!dyld_program_sdk_at_least(dyld_platform_version_macOS_10_13)) {
++//            DisableInitializeForkSafety = true;
++//            if (PrintInitializing) {
++//                _objc_inform("INITIALIZE: disabling +initialize fork "
++//                             "safety enforcement because the app is "
++//                             "too old.)");
++//            }
++//        }
+ 
+         for (uint32_t i = 0; i < hCount; i++) {
+             auto hi = hList[i];
+diff --git a/runtime/objc-runtime-new.mm b/runtime/objc-runtime-new.mm
+index bce98c3..d93f637 100644
+--- a/runtime/objc-runtime-new.mm
++++ b/runtime/objc-runtime-new.mm
+@@ -173,8 +173,8 @@ static constexpr T coveringMask(T n) {
+ STATIC_ASSERT((~ISA_MAGIC_MASK & ISA_MAGIC_VALUE) == 0);
+ 
+ // die if virtual address space bound goes up
+-STATIC_ASSERT((~ISA_MASK & MACH_VM_MAX_ADDRESS) == 0  ||  
+-              ISA_MASK + sizeof(void*) == MACH_VM_MAX_ADDRESS);
++//STATIC_ASSERT((~ISA_MASK & MACH_VM_MAX_ADDRESS) == 0  ||
++//              ISA_MASK + sizeof(void*) == MACH_VM_MAX_ADDRESS);
+ 
+ // SUPPORT_PACKED_ISA
+ #else
+@@ -3515,13 +3515,13 @@ void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int un
+         // (linked before OS X 10.11)
+         // Note: we must check for macOS, because Catalyst and Almond apps
+         // return false for a Mac SDK check! rdar://78225780
+-        if (dyld_get_active_platform() == PLATFORM_MACOS && !dyld_program_sdk_at_least(dyld_platform_version_macOS_10_11)) {
+-            DisableNonpointerIsa = true;
+-            if (PrintRawIsa) {
+-                _objc_inform("RAW ISA: disabling non-pointer isa because "
+-                             "the app is too old.");
+-            }
+-        }
++//        if (dyld_get_active_platform() == PLATFORM_MACOS && !dyld_program_sdk_at_least(dyld_platform_version_macOS_10_11)) {
++//            DisableNonpointerIsa = true;
++//            if (PrintRawIsa) {
++//                _objc_inform("RAW ISA: disabling non-pointer isa because "
++//                             "the app is too old.");
++//            }
++//        }
+ 
+         // Disable non-pointer isa if the app has a __DATA,__objc_rawisa section
+         // New apps that load old extensions may need this.
+@@ -8368,7 +8368,7 @@ Class _objc_getFreedObjectClass (void)
+ static void
+ initializeTaggedPointerObfuscator(void)
+ {
+-    if (!DisableTaggedPointerObfuscation && dyld_program_sdk_at_least(dyld_fall_2018_os_versions)) {
++    if (!DisableTaggedPointerObfuscation ) { // && dyld_program_sdk_at_least(dyld_fall_2018_os_versions)
+         // Pull random data into the variable, then shift away all non-payload bits.
+         arc4random_buf(&objc_debug_taggedpointer_obfuscator,
+                        sizeof(objc_debug_taggedpointer_obfuscator));
+diff --git a/runtime/objc-runtime.mm b/runtime/objc-runtime.mm
+index 23d22bf..0379d90 100644
+--- a/runtime/objc-runtime.mm
++++ b/runtime/objc-runtime.mm
+@@ -33,7 +33,7 @@
+ * Imports.
+ **********************************************************************/
+ 
+-#include <os/feature_private.h> // os_feature_enabled_simple()
++//#include <os/feature_private.h> // os_feature_enabled_simple()
+ #include "objc-private.h"
+ #include "objc-loadmethod.h"
+ #include "objc-file.h"
+@@ -376,8 +376,8 @@ void environ_init(void)
+     // older SDKs. LRU coalescing can reorder releases and certain older apps
+     // are accidentally relying on the ordering.
+     // rdar://problem/63886091
+-    if (!dyld_program_sdk_at_least(dyld_fall_2020_os_versions))
+-        DisableAutoreleaseCoalescingLRU = true;
++//    if (!dyld_program_sdk_at_least(dyld_fall_2020_os_versions))
++//        DisableAutoreleaseCoalescingLRU = true;
+ 
+     bool PrintHelp = false;
+     bool PrintOptions = false;
+@@ -441,9 +441,9 @@ void environ_init(void)
+         }
+     }
+ 
+-    if (!os_feature_enabled_simple(objc4, preoptimizedCaches, true)) {
+-        DisablePreoptCaches = true;
+-    }
++//    if (!os_feature_enabled_simple(objc4, preoptimizedCaches, true)) {
++//        DisablePreoptCaches = true;
++//    }
+ 
+     // Print OBJC_HELP and OBJC_PRINT_OPTIONS output.
+     if (PrintHelp  ||  PrintOptions) {

@@ -1,0 +1,65 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   LICENSE
+	new file:   README.md
+	new file:   include/Block_private.h
+	new file:   include/CrashReporterClient.h
+	new file:   include/System/machine/cpu_capabilities.h
+	new file:   include/System/pthread_machdep.h
+	new file:   include/_simple.h
+	new file:   include/kern/restartable.h
+	new file:   include/mach-o/dyld_priv.h
+	new file:   include/objc-shared-cache.h
+	new file:   include/os/base_private.h
+	new file:   include/os/linker_set.h
+	new file:   include/os/lock_private.h
+	new file:   include/os/reason_private.h
+	new file:   include/os/tsd.h
+	new file:   include/os/variant_private.h
+	new file:   include/pthread/spinlock_private.h
+	new file:   include/pthread/tsd_private.h
+	new file:   include/sys/reason.h
+	new file:   objc_debug/main.m
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	deleted:    LICENSE
+	deleted:    README.md
+	modified:   include/Block_private.h
+	modified:   include/CrashReporterClient.h
+	modified:   include/System/machine/cpu_capabilities.h
+	modified:   include/System/pthread_machdep.h
+	modified:   include/_simple.h
+	modified:   include/kern/restartable.h
+	modified:   include/mach-o/dyld_priv.h
+	modified:   include/objc-shared-cache.h
+	modified:   include/os/linker_set.h
+	modified:   include/os/lock_private.h
+	modified:   include/os/reason_private.h
+	modified:   include/os/tsd.h
+	modified:   include/os/variant_private.h
+	modified:   include/pthread/spinlock_private.h
+	modified:   include/pthread/tsd_private.h
+	modified:   include/sys/reason.h
+	modified:   objc.xcodeproj/project.pbxproj
+	modified:   objc_debug/main.m
+	modified:   runtime/NSObject.mm
+	modified:   runtime/objc-cache.mm
+	modified:   runtime/objc-opt.mm
+	modified:   runtime/objc-os.mm
+	modified:   runtime/objc-runtime-new.mm
+	modified:   runtime/objc-runtime.mm
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.DS_Store
+	include/.DS_Store
+	lastGitDiff
+	lastGitStatus
+	objc.xcodeproj/project.xcworkspace/
+	objc.xcodeproj/xcuserdata/
+
