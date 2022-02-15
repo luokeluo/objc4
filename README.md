@@ -15,7 +15,7 @@
 
 | macOS | macOS Version | Xcode Version | objc4 tarball version |
 | - | - | - | - |
-| [macOS Monterey] | [12.0.1] | [13.2 (13C90)] | [objc4-838] |
+| ![macOS Monterey] | ![12.0.1] | ![13.2 (13C90)] | ![objc4-838] |
 
 ## **Installation**
 
