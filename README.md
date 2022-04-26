@@ -25,6 +25,7 @@ Download zip or clone this repo, select **objc_debug** 、 **My Mac** and build.
 ## **Usage**
 
 手动把编译产物`libobjc.A.dylib`加入到你的工程，或者直接在`objc_debug`的main文件打断点调试。
+如果没有办法在main函数打断点，可以尝试写个类，提供一个方法，方法里面设置断点，在main函数里调用这个方法。
 
 
 ## License
